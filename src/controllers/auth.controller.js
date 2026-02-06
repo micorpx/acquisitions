@@ -1,9 +1,9 @@
-import { signUpSchema, signInSchema } from '#validations/auth.validation.js';
-import { formatValidationErrors } from '#utils/format.js';
-import logger from '#config/logger.js';
-import { createUser, authenticateUser } from '#services/auth.service.js';
-import { jwttoken } from '#utils/jwt.js';
-import { cookies } from '#utils/cookies.js';
+import { signUpSchema, signInSchema } from './src/validations/auth.validation.js';
+import { formatValidationErrors } from './src/utils/format.js';
+import logger from './src/config/logger.js';
+import { createUser, authenticateUser } from './src/services/auth.service.js';
+import { jwttoken } from './src/utils/jwt.js';
+import { cookies } from './src/utils/cookies.js';
 // import { de, id } from "zod/locales";
 
 export const signUp = async(req, res, next) => {

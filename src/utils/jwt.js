@@ -1,4 +1,4 @@
-import logger from '#config/logger.js';
+import logger from './src/config/logger.js';
 import jwtPkg from 'jsonwebtoken';
 
 
