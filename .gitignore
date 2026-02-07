@@ -1,3 +1,19 @@
+# Dependencies
 node_modules
-.env.*
+
+# Environment files (keep examples)
 .env
+.env.*
+!.env.example
+.env.development
+.env.production
+
+# Local env overrides with real secrets
+.env.*.local
+
+# Logs
+logs
+*.log
+.neon_local/
+logs/
+
