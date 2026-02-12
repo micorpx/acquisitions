@@ -35,7 +35,7 @@ jobs:
 
       - name: Run tests
         id: tests
-        run: npm test -- --ci --json --outputFile=test-results.json 2>&1 | tee test-output.txt
+        run: npm test
         continue-on-error: true
 
       - name: List files
@@ -46,7 +46,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-reports
-          path: coverage/
+          path: coverage
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Generate test summary
