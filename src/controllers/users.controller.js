@@ -81,22 +81,18 @@ export const updateUserById = async (req, res, next) => {
 
     // Check if user is trying to update their own info or is admin
     if (req.user.id !== id && req.user.role !== 'admin') {
-      return res
-        .status(403)
-        .json({
-          error: 'Forbidden',
-          message: 'You can only update your own information',
-        });
+      return res.status(403).json({
+        error: 'Forbidden',
+        message: 'You can only update your own information',
+      });
     }
 
     // Only admins can change role
     if (updates.role && req.user.role !== 'admin') {
-      return res
-        .status(403)
-        .json({
-          error: 'Forbidden',
-          message: 'Only admins can change user roles',
-        });
+      return res.status(403).json({
+        error: 'Forbidden',
+        message: 'Only admins can change user roles',
+      });
     }
 
     logger.info(`Updating user ${id}`);
@@ -132,12 +128,10 @@ export const deleteUserById = async (req, res, next) => {
 
     // Only admins or the user themselves can delete
     if (req.user.id !== id && req.user.role !== 'admin') {
-      return res
-        .status(403)
-        .json({
-          error: 'Forbidden',
-          message: 'You can only delete your own account',
-        });
+      return res.status(403).json({
+        error: 'Forbidden',
+        message: 'You can only delete your own account',
+      });
     }
 
     logger.info(`Deleting user ${id}`);
