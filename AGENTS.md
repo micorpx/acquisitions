@@ -96,5 +96,31 @@ Key variables (see `.env.example` and `DOCKER.md`):
 - `ARCJET_KEY` - Arcjet API key
 - `NODE_ENV` - `development` or `production`
 
+## Coding Conventions
+
+### Style (enforced by ESLint)
+- Single quotes, 2-space indent, semicolons required
+- `prefer-const`, `no-var`, arrow callbacks
+- Unused args prefixed with `_` are allowed
+
+### File Naming
+- `<resource>.controller.js`, `<resource>.service.js`, `<resource>.routes.js`
+- `<resource>.model.js` for Drizzle schemas, `<resource>.validation.js` for Zod schemas
+
+### Error Handling Pattern
+Services throw errors with specific messages; controllers catch and map to HTTP status codes:
+```javascript
+// Service throws
+throw new Error('User not found');
+
+// Controller catches
+if (e.message === 'User not found') {
+  return res.status(404).json({ error: 'User not found' });
+}
+next(e); // Unknown errors pass to Express error handler
+```
+
 ## Testing
 Tests use Jest with `--experimental-vm-modules` for ESM support. Test files go in `tests/` directory and use Supertest for HTTP assertions against the Express app.
+
+Coverage is collected automatically with 70% threshold for branches, functions, lines, and statements.
