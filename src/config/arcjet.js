@@ -6,7 +6,26 @@ const aj = arcjet({
     shield({ mode: 'LIVE' }),
     detectBot({
       mode: 'LIVE',
-      allow: ['CATEGORY:SEARCH_ENGINE', 'CATEGORY:PREVIEW'],
+      // Allow search engines, preview bots, and development tools
+      allow: [
+        'CATEGORY:SEARCH_ENGINE', // Google, Bing, etc.
+        'CATEGORY:PREVIEW', // Link previews (Slack, Discord, etc.)
+        // Development and testing tools
+        'POSTMAN', // Postman
+        'THUNDERSHEET', // Thunder Client (VS Code)
+        'REST CLIENT', // REST Client (VS Code)
+        'HTTPIE', // HTTPie
+        'INSOMNIA', // Insomnia
+        'CURL', // cURL
+        'WGET', // wget
+        'FETCH', // Node.js fetch
+        'NODE', // Node.js HTTP client
+        'SUPERTEST', // Jest supertest
+        'CHROME', // Chrome browser
+        'FIREFOX', // Firefox browser
+        'SAFARI', // Safari browser
+        'EDGE', // Edge browser
+      ],
     }),
     slidingWindow({
       mode: 'LIVE',

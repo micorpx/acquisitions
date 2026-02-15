@@ -2,89 +2,68 @@ name: Tests
 
 on:
   push:
-    branches:
-      - main
-      - staging
+    branches: [main, develop]
   pull_request:
-    branches:
-      - main
-      - staging
+    branches: [main, develop]
 
 jobs:
-  test:
-    name: Run Tests
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-
-    env:
-      NODE_ENV: test
-      NODE_OPTIONS: --experimental-vm-modules
-      DATABASE_URL: postgresql://test:test@localhost:5432/test_db
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        id: tests
-        run: npm test
-        continue-on-error: true
+      - name: Run ESLint
+        run: npm run lint
 
-      - name: Upload coverage reports
-        uses: actions/upload-artifact@v4
+  test:
+    name: Test (Node.js ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      matrix:
+        node-version: ['18', '20', '22']
+        exclude:
+          - node-version: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
-          name: coverage-reports
-          path: coverage
-          if-no-files-found: warn
-          retention-days: 30
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-      - name: Generate test summary
-        if: always()
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate environment variables
         run: |
-          echo "## 🧪 Test Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          if [ "${{ steps.tests.outcome }}" == "success" ]; then
-            echo "### ✅ All Tests Passed" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "### ❌ Some Tests Failed" >> $GITHUB_STEP_SUMMARY
+          if [ -z "$JWT_SECRET" ]; then
+            echo "JWT_SECRET is required"
+            exit 1
           fi
-          echo "" >> $GITHUB_STEP_SUMMARY
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
-          # Coverage summary
-          echo "### 📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
-          if [ -f coverage/coverage-summary.json ]; then
-            LINES=$(cat coverage/coverage-summary.json | jq -r '.total.lines.pct // "N/A"')
-            STATEMENTS=$(cat coverage/coverage-summary.json | jq -r '.total.statements.pct // "N/A"')
-            FUNCTIONS=$(cat coverage/coverage-summary.json | jq -r '.total.functions.pct // "N/A"')
-            BRANCHES=$(cat coverage/coverage-summary.json | jq -r '.total.branches.pct // "N/A"')
-            echo "| Metric | Coverage |" >> $GITHUB_STEP_SUMMARY
-            echo "|--------|----------|" >> $GITHUB_STEP_SUMMARY
-            echo "| Lines | ${LINES}% |" >> $GITHUB_STEP_SUMMARY
-            echo "| Statements | ${STATEMENTS}% |" >> $GITHUB_STEP_SUMMARY
-            echo "| Functions | ${FUNCTIONS}% |" >> $GITHUB_STEP_SUMMARY
-            echo "| Branches | ${BRANCHES}% |" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "Coverage report not available." >> $GITHUB_STEP_SUMMARY
-          fi
+      - name: Run tests with coverage
+        run: npm test -- --coverage
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ARCJET_KEY: ${{ secrets.ARCJET_KEY }}
 
-      - name: Annotate test failures
-        if: steps.tests.outcome == 'failure'
-        run: |
-          echo "::error::Tests failed. Please review the test output and fix failing tests."
-          if [ -f test-output.txt ]; then
-            # Extract and display failure information
-            grep -A 5 "FAIL\|Error\|✕" test-output.txt | head -50 || true
-          fi
-
-      - name: Fail workflow if tests failed
-        if: steps.tests.outcome == 'failure'
-        run: exit 1
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true

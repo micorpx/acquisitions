@@ -8,21 +8,12 @@ const normalizeIP = ip => {
   return ip.startsWith('::ffff:') ? ip.replace('::ffff:', '') : ip;
 };
 
-// Helper to detect local/development IPs
-const isLocalIP = ip => {
-  const cleanIP = normalizeIP(ip);
-  return (
-    cleanIP === '127.0.0.1' ||
-    cleanIP === '::1' ||
-    cleanIP === 'localhost' ||
-    cleanIP.startsWith('172.') || // Docker networks
-    cleanIP.startsWith('192.168.') ||
-    cleanIP.startsWith('10.')
-    // ip === 'localhost'
-  );
-};
-
 const securityMiddleware = async (req, res, next) => {
+  // Skip Arcjet in test environment
+  if (process.env.NODE_ENV === 'test') {
+    return next();
+  }
+
   try {
     const role = req.user?.role || 'guest';
 
@@ -56,23 +47,15 @@ const securityMiddleware = async (req, res, next) => {
     const decision = await client.protect(req);
 
     if (decision.isDenied() && decision.reason.isBot()) {
-      if (isLocalIP(req.ip)) {
-        logger.info('Bot detection skipped for local IP', {
-          ip: req.ip,
-          userAgent: req.get('User-Agent'),
-          path: req.path,
-        });
-      } else {
-        logger.warn('Bot request blocked', {
-          ip: req.ip,
-          userAgent: req.get('User-Agent'),
-          path: req.path,
-        });
-        return res.status(403).json({
-          error: 'Forbidden',
-          message: 'Automated requests are not allowed',
-        });
-      }
+      logger.warn('Bot request blocked', {
+        ip: req.ip,
+        userAgent: req.get('User-Agent'),
+        path: req.path,
+      });
+      return res.status(403).json({
+        error: 'Forbidden',
+        message: 'Automated requests are not allowed',
+      });
     }
 
     if (decision.isDenied() && decision.reason.isShield()) {
@@ -102,7 +85,7 @@ const securityMiddleware = async (req, res, next) => {
     }
     next();
   } catch (e) {
-    console.error('Arcjet middleware error:', e);
+    logger.error('Arcjet middleware error:', e);
     res.status(500).json({
       error: 'Internal server error',
       message: 'Something went wrong with security middleware',

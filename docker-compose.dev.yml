@@ -1,45 +1,29 @@
-services:
-  # Neon Local - Creates ephemeral database branches for development
-  neon-local:
-    image: neondatabase/neon_local
-    container_name: neon-local
-    env_file:
-      - .env.development
-    ports:
-      - '5432:5432'
-    healthcheck:
-      test: ['CMD', 'pg_isready', '-h', 'localhost', '-p', '5432']
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
-    restart: unless-stopped
+version: '3.8'
 
-  # Application service
+services:
+  # Application service - connects directly to Neon Cloud
   app:
     build:
       context: .
       dockerfile: Dockerfile
       target: development
     container_name: acquisitions-dev
-    env_file:
-      - .env.development
-    environment:
-      - NODE_ENV=development
-      # Connect to Neon Local proxy within Docker network
-      - DATABASE_URL=postgres://neondb_owner:${NEON_DB_PASSWORD}@neon-local:5432/neondb
+    restart: unless-stopped
     ports:
       - '${PORT:-3000}:3000'
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - ARCJET_KEY=${ARCJET_KEY}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+    env_file:
+      - .env
     volumes:
       # Mount source code for hot-reloading
       - ./src:/app/src:ro
       - ./drizzle:/app/drizzle:ro
       - ./logs:/app/logs
-    depends_on:
-      neon-local:
-        condition: service_healthy
-    restart: unless-stopped
-
-networks:
-  default:
-    name: acquisitions-dev-network
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'

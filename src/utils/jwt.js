@@ -1,24 +1,29 @@
 import logger from '../config/logger.js';
 import jwtPkg from 'jsonwebtoken';
 
-const JWT_SECRET =
-  process.env.JWT_SECRET || 'your_jwt_secret_key please change in PRODUCTION';
-const JWT_EXPIRES_IN = '1d';
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = '15m';
+
+// Validate JWT_SECRET at load time
+if (!JWT_SECRET) {
+  logger.error('JWT_SECRET environment variable is required');
+  throw new Error('JWT_SECRET environment variable is required');
+}
 
 export const jwttoken = {
   sign: payload => {
     try {
-      return jwtPkg.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+      return jwtPkg.sign(payload, JWT_SECRET, { algorithm: 'HS256', expiresIn: JWT_EXPIRES_IN });
     } catch (error) {
-      logger.error('Failed to authenticate token', error);
-      throw new Error('Failed to authenticate token');
+      logger.error('Failed to sign JWT token', error);
+      throw new Error('Failed to sign JWT token');
     }
   },
   verify: token => {
     try {
-      return jwtPkg.verify(token, JWT_SECRET);
+      return jwtPkg.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
     } catch (error) {
-      logger.error('Failed to authenticate token', error);
+      logger.error('Failed to verify JWT token', error);
       throw new Error('Failed to authenticate token');
     }
   },

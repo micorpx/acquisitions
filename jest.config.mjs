@@ -5,8 +5,17 @@
 
 /** @type {import('jest').Config} */
 const config = {
+  // Set NODE_ENV to test
+  testEnvironment: 'node',
+  testEnvironmentOptions: {
+    NODE_ENV: 'test',
+  },
+
   // Clear mocks between tests for isolation
   clearMocks: true,
+
+  // Reset mocks after each test
+  resetMocks: true,
 
   // Restore mocks after each test
   restoreMocks: true,

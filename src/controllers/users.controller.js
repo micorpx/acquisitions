@@ -38,6 +38,15 @@ export const fetchUserById = async (req, res, next) => {
     }
 
     const { id } = validationResult.data;
+
+    // Authorization check: users can only fetch their own data unless admin
+    if (req.user.id !== id && req.user.role !== 'admin') {
+      return res.status(403).json({
+        error: 'Forbidden',
+        message: 'You can only access your own user data',
+      });
+    }
+
     logger.info(`Getting user by ID: ${id}`);
 
     const user = await getUserById(id);

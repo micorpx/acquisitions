@@ -9,7 +9,7 @@ export const hashPassword = async password => {
   try {
     return await bcrypt.hash(password, 10);
   } catch (e) {
-    logger.error(`Error hashing the password : ${e}`);
+    logger.error('Error hashing password');
     throw new Error('Error hashing');
   }
 };
