@@ -3,7 +3,9 @@ import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 
 const connectionString = process.env.DATABASE_URL;
-const useSsl = connectionString?.includes('sslmode=require') || process.env.NODE_ENV === 'production';
+const useSsl =
+  connectionString?.includes('sslmode=require') ||
+  process.env.NODE_ENV === 'production';
 
 const pool = new Pool({
   connectionString,

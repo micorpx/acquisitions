@@ -3,7 +3,8 @@ import jwtPkg from 'jsonwebtoken';
 
 const JWT_EXPIRES_IN = '15m';
 const isTestEnv = process.env.NODE_ENV === 'test';
-const JWT_SECRET = process.env.JWT_SECRET || (isTestEnv ? 'ci-test-jwt-secret' : undefined);
+const JWT_SECRET =
+  process.env.JWT_SECRET || (isTestEnv ? 'ci-test-jwt-secret' : undefined);
 
 // Validate JWT_SECRET at load time for non-test environments.
 if (!JWT_SECRET) {
