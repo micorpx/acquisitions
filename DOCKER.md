@@ -170,14 +170,14 @@ docker compose -f docker-compose.prod.yml down
 
 ## Environment Variables Reference
 
-| Variable           | Development (Docker)      | Development (No Docker) | Production   | Description                  |
-| ------------------ | ------------------------- | ----------------------- | ------------ | ---------------------------- |
-| `NODE_ENV`         | `development`             | `development`           | `production` | App environment              |
-| `PORT`             | `3000`                    | `3000`                  | `3000`       | Server port                  |
-| `DATABASE_URL`     | `postgres://postgres:postgres@db:5432/acquisitions` | Your Neon URL | Required     | Postgres connection string   |
-| `JWT_SECRET`       | Required                  | Required                | Required     | JWT signing secret           |
-| `ARCJET_KEY`       | Required                  | Required                | Required     | Arcjet security key          |
-| `LOG_LEVEL`        | `info`                    | `info`                  | `info`       | Logging verbosity            |
+| Variable       | Development (Docker)                                | Development (No Docker) | Production   | Description                |
+| -------------- | --------------------------------------------------- | ----------------------- | ------------ | -------------------------- |
+| `NODE_ENV`     | `development`                                       | `development`           | `production` | App environment            |
+| `PORT`         | `3000`                                              | `3000`                  | `3000`       | Server port                |
+| `DATABASE_URL` | `postgres://postgres:postgres@db:5432/acquisitions` | Your Neon URL           | Required     | Postgres connection string |
+| `JWT_SECRET`   | Required                                            | Required                | Required     | JWT signing secret         |
+| `ARCJET_KEY`   | Required                                            | Required                | Required     | Arcjet security key        |
+| `LOG_LEVEL`    | `info`                                              | `info`                  | `info`       | Logging verbosity          |
 
 ## Docker Commands Reference
 
@@ -236,6 +236,7 @@ docker build --target production -t acquisitions:prod .
 ### Option 1: Docker Development (Default)
 
 Uses local PostgreSQL container:
+
 ```bash
 ./scripts/dev.sh
 # or
@@ -245,12 +246,14 @@ docker compose -f docker-compose.dev.yml up --build
 ### Option 2: No Docker, Neon Cloud
 
 Uses Neon Cloud directly:
+
 1. Update `.env` with Neon Cloud URL
 2. Run `npm run dev`
 
 ### Option 3: Production
 
 Uses Neon Cloud with Docker:
+
 ```bash
 docker compose -f docker-compose.prod.yml up --build -d
 ```

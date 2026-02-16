@@ -21,26 +21,27 @@ if ! docker info >/dev/null 2>&1; then
 fi
 
 echo "📦 Building and starting production container..."
+echo "   - Environment file: .env.production"
 echo "   - Using Neon Cloud Database (no local proxy)"
 echo "   - Running in optimized production mode"
 echo ""
 
-# Start production environment
-docker compose -f docker-compose.prod.yml up --build -d
+# Start production environment using production env file for substitution
+docker compose --env-file .env.production -f docker-compose.prod.yml up --build -d
 
-# Wait for DB to be ready (basic health check)
-echo "⏳ Waiting for Neon Local to be ready..."
+# Wait for app to initialize
+echo "⏳ Waiting for application to be ready..."
 sleep 5
 
-# Run migrations with Drizzle
+# Run migrations inside the production container
 echo "📜 Applying latest schema with Drizzle..."
-npm run db:migrate
+docker compose --env-file .env.production -f docker-compose.prod.yml exec app npm run db:migrate
 
 echo ""
 echo "🎉 Production environment started!"
 echo "   Application: http://localhost:3000"
-echo "   Logs: docker logs acquisition-app-prod"
+echo "   Logs: docker logs acquisitions-api"
 echo ""
 echo "Useful commands:"
-echo "   View logs: docker logs -f acquisition-app-prod"
-echo "   Stop app: docker compose -f docker-compose.prod.yml down"
+echo "   View logs: docker logs -f acquisitions-api"
+echo "   Stop app: docker compose --env-file .env.production -f docker-compose.prod.yml down"

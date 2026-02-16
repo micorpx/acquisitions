@@ -8,27 +8,27 @@ const createLogger = (correlationId = null) => {
 
   // Add correlation ID if provided
   if (correlationId) {
-    formats.push(winston.format.metadata({ key: 'correlationId', value: correlationId }));
+    formats.push(
+      winston.format.metadata({ key: 'correlationId', value: correlationId })
+    );
   }
 
   // Use JSON format in production, simple format in development
   if (process.env.NODE_ENV === 'production') {
     formats.push(winston.format.json());
   } else {
-    formats.push(
-      winston.format.colorize(),
-      winston.format.simple()
-    );
+    formats.push(winston.format.colorize(), winston.format.simple());
   }
 
-  const transports = [
-    new winston.transports.Console(),
-  ];
+  const transports = [new winston.transports.Console()];
 
   // Add file transports only in non-production
   if (process.env.NODE_ENV !== 'production') {
     transports.push(
-      new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+      new winston.transports.File({
+        filename: 'logs/error.log',
+        level: 'error',
+      }),
       new winston.transports.File({ filename: 'logs/combined.log' })
     );
   }
@@ -47,4 +47,4 @@ const logger = createLogger();
 export default logger;
 
 // Export a method to create child loggers with correlation ID
-logger.child = (correlationId) => createLogger(correlationId);
+logger.child = correlationId => createLogger(correlationId);

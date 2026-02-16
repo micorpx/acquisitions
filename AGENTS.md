@@ -141,3 +141,59 @@ next(e); // Unknown errors pass to Express error handler
 Tests use Jest with `--experimental-vm-modules` for ESM support. Test files go in `tests/` directory and use Supertest for HTTP assertions against the Express app.
 
 Coverage is collected automatically with 70% threshold for branches, functions, lines, and statements.
+
+## Session Handoff (2026-02-15)
+
+Use this section in your next session to continue from current state.
+
+### CI/CD fixes implemented
+
+- Fixed Docker production build failure (`husky: not found`) by changing production install in `Dockerfile`:
+  - `npm ci --omit=dev --ignore-scripts && npm cache clean --force`
+- Fixed lint errors:
+  - Removed unused catch variable in `src/services/auth.service.js`
+  - Refactored `src/server.js` so `server` is `const`
+  - Removed unused `normalizeIP` and `message` in `src/middleware/security.middleware.js`
+  - Renamed unused error middleware arg to `_next` in `src/middleware/errorHandler.js`
+  - Removed duplicate `testEnvironment` key in `jest.config.mjs`
+- Ran formatting across repository; `npm run format:check` now passes.
+
+### Test expansion completed
+
+- Added production-like end-to-end flow tests in `tests/app.test.js`
+- Added dedicated tests for global error middleware and custom errors:
+  - `tests/errorHandler.test.js`
+- Added dedicated tests for security middleware branch coverage:
+  - `tests/security.middleware.test.js`
+
+### Current quality status
+
+- `npm run lint` passes
+- `npm run format:check` passes
+- `npm test` passes
+- Coverage currently exceeds threshold (approx):
+  - Statements: 88%+
+  - Branches: 78%+
+  - Functions: 94%+
+  - Lines: 88%+
+
+### Known behavior and follow-ups
+
+- Jest still logs worker shutdown warning after tests:
+  - "A worker process has failed to exit gracefully..."
+  - Tests pass, but open-handle cleanup can be improved later.
+- Security concern: public sign-up currently accepts `role: 'admin'` from request payload.
+  - This allows privilege escalation unless explicitly intended.
+- Policy mismatch: `DELETE /api/users/:id` route is admin-gated, while controller includes self-delete logic.
+- Docker compose currently uses external `DATABASE_URL` (Neon) and does not run a local postgres service.
+- Ensure env names are correct:
+  - `NODE_ENV` (not `Node_ENV`)
+  - `ARCJET_KEY` (not `ARCHJET_KEY`)
+
+### Quick revalidation commands
+
+```bash
+npm run lint
+npm run format:check
+npm test
+```

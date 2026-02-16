@@ -8,7 +8,7 @@ export const hashPassword = async password => {
   // Simulate password hashing
   try {
     return await bcrypt.hash(password, 10);
-  } catch (e) {
+  } catch {
     logger.error('Error hashing password');
     throw new Error('Error hashing');
   }

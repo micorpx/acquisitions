@@ -162,28 +162,28 @@ npm run prod:docker
 
 ### Authentication
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/sign-up` | Register a new user |
-| POST | `/api/auth/sign-in` | Login and receive JWT cookie |
-| POST | `/api/auth/sign-out` | Logout and clear JWT cookie |
+| Method | Endpoint             | Description                  |
+| ------ | -------------------- | ---------------------------- |
+| POST   | `/api/auth/sign-up`  | Register a new user          |
+| POST   | `/api/auth/sign-in`  | Login and receive JWT cookie |
+| POST   | `/api/auth/sign-out` | Logout and clear JWT cookie  |
 
 ### Users (Require Authentication)
 
-| Method | Endpoint | Description | Required Role |
-|--------|----------|-------------|---------------|
-| GET | `/api/users` | Get all users | admin |
-| GET | `/api/users/:id` | Get user by ID | user |
-| PUT | `/api/users/:id` | Update user | user |
-| DELETE | `/api/users/:id` | Delete user | admin |
+| Method | Endpoint         | Description    | Required Role |
+| ------ | ---------------- | -------------- | ------------- |
+| GET    | `/api/users`     | Get all users  | admin         |
+| GET    | `/api/users/:id` | Get user by ID | user          |
+| PUT    | `/api/users/:id` | Update user    | user          |
+| DELETE | `/api/users/:id` | Delete user    | admin         |
 
 ### Health & Info
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | API information |
-| GET | `/health` | Health check with database status |
-| GET | `/api` | API status |
+| Method | Endpoint  | Description                       |
+| ------ | --------- | --------------------------------- |
+| GET    | `/`       | API information                   |
+| GET    | `/health` | Health check with database status |
+| GET    | `/api`    | API status                        |
 
 ## 8. Testing
 
@@ -340,16 +340,16 @@ docker compose -f docker-compose.prod.yml logs -f
 
 ## 13. Environment Variables Reference
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| NODE_ENV | No | development | Environment (development/production) |
-| PORT | No | 3000 | Server port |
-| DATABASE_URL | Yes | - | PostgreSQL connection string |
-| JWT_SECRET | Yes | - | JWT signing secret (32+ chars) |
-| ARCJET_KEY | Yes | - | Arcjet API key |
-| CORS_ORIGIN | No | false | Allowed CORS origins (comma-separated) |
-| LOG_LEVEL | No | info | Logging level (debug/info/warn/error) |
-| DB_POOL_SIZE | No | 10 | Database connection pool size |
+| Variable     | Required | Default     | Description                            |
+| ------------ | -------- | ----------- | -------------------------------------- |
+| NODE_ENV     | No       | development | Environment (development/production)   |
+| PORT         | No       | 3000        | Server port                            |
+| DATABASE_URL | Yes      | -           | PostgreSQL connection string           |
+| JWT_SECRET   | Yes      | -           | JWT signing secret (32+ chars)         |
+| ARCJET_KEY   | Yes      | -           | Arcjet API key                         |
+| CORS_ORIGIN  | No       | false       | Allowed CORS origins (comma-separated) |
+| LOG_LEVEL    | No       | info        | Logging level (debug/info/warn/error)  |
+| DB_POOL_SIZE | No       | 10          | Database connection pool size          |
 
 ## 14. Docker Development
 
@@ -375,6 +375,7 @@ docker compose -f docker-compose.prod.yml up --build
 ### Docker Requirements
 
 For Docker development, ensure you have:
+
 - Docker Desktop for Windows/Mac
 - Docker Engine for Linux
 

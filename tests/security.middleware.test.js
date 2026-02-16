@@ -1,6 +1,11 @@
 import { jest } from '@jest/globals';
 
-const buildDecision = ({ denied = false, bot = false, shield = false, rate = false } = {}) => ({
+const buildDecision = ({
+  denied = false,
+  bot = false,
+  shield = false,
+  rate = false,
+} = {}) => ({
   isDenied: () => denied,
   reason: {
     isBot: () => bot,
@@ -48,13 +53,16 @@ const loadMiddleware = async ({
     slidingWindow,
   }));
 
-  const { default: securityMiddleware } = await import('../src/middleware/security.middleware.js');
+  const { default: securityMiddleware } =
+    await import('../src/middleware/security.middleware.js');
   return { securityMiddleware, withRule, protect, warn, error, slidingWindow };
 };
 
 describe('security middleware', () => {
   it('skips Arcjet in test environment', async () => {
-    const { securityMiddleware, withRule } = await loadMiddleware({ nodeEnv: 'test' });
+    const { securityMiddleware, withRule } = await loadMiddleware({
+      nodeEnv: 'test',
+    });
     const req = {};
     const res = createRes();
     const next = jest.fn();
@@ -148,7 +156,12 @@ describe('security middleware', () => {
       decision: buildDecision({ denied: true, shield: true }),
     });
 
-    const req = { ip: '127.0.0.1', path: '/api', method: 'GET', get: () => 'UA' };
+    const req = {
+      ip: '127.0.0.1',
+      path: '/api',
+      method: 'GET',
+      get: () => 'UA',
+    };
     const res = createRes();
     const next = jest.fn();
 

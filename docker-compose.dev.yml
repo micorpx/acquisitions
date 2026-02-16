@@ -1,7 +1,20 @@
 version: '3.8'
 
 services:
-  # Application service - connects directly to Neon Cloud
+  # Neon Local database proxy for development
+  neon-local:
+    image: neondatabase/neon_local:latest
+    container_name: acquisitions-neon-local
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      - NEON_API_KEY=${NEON_API_KEY}
+      - NEON_PROJECT_ID=${NEON_PROJECT_ID}
+    volumes:
+      - ./.neon_local:/tmp/neon
+
+  # Application service - connects using Neon connection string routed via Neon Local
   app:
     build:
       context: .
@@ -9,6 +22,8 @@ services:
       target: development
     container_name: acquisitions-dev
     restart: unless-stopped
+    depends_on:
+      - neon-local
     ports:
       - '${PORT:-3000}:3000'
     environment:
@@ -19,7 +34,7 @@ services:
       - ARCJET_KEY=${ARCJET_KEY}
       - CORS_ORIGIN=${CORS_ORIGIN}
     env_file:
-      - .env
+      - .env.development
     volumes:
       # Mount source code for hot-reloading
       - ./src:/app/src:ro

@@ -1,9 +1,11 @@
 import logger from '../config/logger.js';
 import { AppError } from '../errors/AppError.js';
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, _next) => {
   // Create a child logger with correlation ID for this request
-  const errorLogger = req.correlationId ? logger.child(req.correlationId) : logger;
+  const errorLogger = req.correlationId
+    ? logger.child(req.correlationId)
+    : logger;
 
   // Log the error
   errorLogger.error('Error:', {
@@ -63,7 +65,8 @@ const errorHandler = (err, req, res, next) => {
   }
 
   // Handle database errors
-  if (err.code === '23505') { // PostgreSQL unique violation
+  if (err.code === '23505') {
+    // PostgreSQL unique violation
     return res.status(409).json({
       success: false,
       error: {

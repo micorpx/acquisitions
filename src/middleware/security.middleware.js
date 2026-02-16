@@ -2,12 +2,6 @@ import aj from '../config/arcjet.js';
 import logger from '../config/logger.js';
 import { slidingWindow } from '@arcjet/node';
 
-// Normalize IPv6-mapped IPv4 (::ffff:x.x.x.x) to plain IPv4
-const normalizeIP = ip => {
-  if (!ip) return '';
-  return ip.startsWith('::ffff:') ? ip.replace('::ffff:', '') : ip;
-};
-
 const securityMiddleware = async (req, res, next) => {
   // Skip Arcjet in test environment
   if (process.env.NODE_ENV === 'test') {
@@ -18,20 +12,16 @@ const securityMiddleware = async (req, res, next) => {
     const role = req.user?.role || 'guest';
 
     let limit;
-    let message;
 
     switch (role) {
       case 'admin':
         limit = 20;
-        message = 'Admin request limit exceeded (20 per minute). Slow down.';
         break;
       case 'user':
         limit = 10;
-        message = 'User request limit exceeded (10 per minute). Slow down.';
         break;
       case 'guest':
         limit = 5;
-        message = 'Guest request limit exceeded (5 per minute). Slow down.';
         break;
     }
 

@@ -54,7 +54,10 @@ describe('API Endpoints', () => {
     describe('GET /api', () => {
       it('should return API message', async () => {
         const response = await request(app).get('/api').expect(200);
-        expect(response.body).toHaveProperty('message', 'Acquisition API is running!');
+        expect(response.body).toHaveProperty(
+          'message',
+          'Acquisition API is running!'
+        );
       });
     });
 
@@ -63,7 +66,10 @@ describe('API Endpoints', () => {
         const response = await request(app).get('/non-existent').expect(404);
         expect(response.body).toHaveProperty('success', false);
         expect(response.body.error).toHaveProperty('code', 'NOT_FOUND');
-        expect(response.body.error).toHaveProperty('message', 'Route not found');
+        expect(response.body.error).toHaveProperty(
+          'message',
+          'Route not found'
+        );
       });
     });
   });
@@ -114,7 +120,10 @@ describe('API Endpoints', () => {
         const response = await request(app)
           .post('/api/auth/sign-out')
           .expect(200);
-        expect(response.body).toHaveProperty('message', 'User signed out successfully');
+        expect(response.body).toHaveProperty(
+          'message',
+          'User signed out successfully'
+        );
       });
     });
   });
@@ -122,10 +131,11 @@ describe('API Endpoints', () => {
   describe('User CRUD Endpoints', () => {
     describe('GET /api/users', () => {
       it('should return 401 without auth token', async () => {
-        const response = await request(app)
-          .get('/api/users')
-          .expect(401);
-        expect(response.body).toHaveProperty('error', 'Authentication required');
+        const response = await request(app).get('/api/users').expect(401);
+        expect(response.body).toHaveProperty(
+          'error',
+          'Authentication required'
+        );
       });
 
       it('should return 403 with regular user token', async () => {
@@ -140,15 +150,18 @@ describe('API Endpoints', () => {
         const response = await request(app)
           .get('/api/users')
           .set('Cookie', `token=${adminToken}`);
-        
+
         // Skip if database is not available in test environment
         if (response.status === 500) {
           console.log('Skipping test - database not available');
           return;
         }
-        
+
         expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty('message', 'Successfully retrieved all users');
+        expect(response.body).toHaveProperty(
+          'message',
+          'Successfully retrieved all users'
+        );
         expect(response.body).toHaveProperty('users');
         expect(Array.isArray(response.body.users)).toBe(true);
       });
@@ -238,7 +251,10 @@ describe('API Endpoints', () => {
         .set('Cookie', 'token=invalid-token')
         .expect(401);
       expect(response.body).toHaveProperty('error', 'Authentication failed');
-      expect(response.body).toHaveProperty('message', 'Invalid or expired token');
+      expect(response.body).toHaveProperty(
+        'message',
+        'Invalid or expired token'
+      );
     });
   });
 
@@ -362,7 +378,10 @@ describe('API Endpoints', () => {
         .send({ name: 'E2E User Updated' })
         .expect(200);
 
-      expect(updateResponse.body.user).toHaveProperty('name', 'E2E User Updated');
+      expect(updateResponse.body.user).toHaveProperty(
+        'name',
+        'E2E User Updated'
+      );
     });
 
     it('should block non-admin role changes', async () => {
@@ -376,7 +395,10 @@ describe('API Endpoints', () => {
         .send({ role: 'admin' })
         .expect(403);
 
-      expect(response.body).toHaveProperty('message', 'Only admins can change user roles');
+      expect(response.body).toHaveProperty(
+        'message',
+        'Only admins can change user roles'
+      );
     });
 
     it('should return 404 when admin fetches non-existent user id', async () => {
@@ -419,7 +441,10 @@ describe('API Endpoints', () => {
         .set('User-Agent', 'Supertest')
         .expect(200);
 
-      expect(deleteResponse.body).toHaveProperty('message', 'User deleted successfully');
+      expect(deleteResponse.body).toHaveProperty(
+        'message',
+        'User deleted successfully'
+      );
     });
 
     it('should return 404 when admin deletes non-existent user', async () => {

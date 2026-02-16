@@ -48,9 +48,6 @@ const config = {
   // Use V8 for coverage
   coverageProvider: 'v8',
 
-  // Test environment
-  testEnvironment: 'node',
-
   // Test file patterns
   testMatch: ['**/tests/**/*.test.js'],
 

@@ -13,7 +13,10 @@ if (!JWT_SECRET) {
 export const jwttoken = {
   sign: payload => {
     try {
-      return jwtPkg.sign(payload, JWT_SECRET, { algorithm: 'HS256', expiresIn: JWT_EXPIRES_IN });
+      return jwtPkg.sign(payload, JWT_SECRET, {
+        algorithm: 'HS256',
+        expiresIn: JWT_EXPIRES_IN,
+      });
     } catch (error) {
       logger.error('Failed to sign JWT token', error);
       throw new Error('Failed to sign JWT token');

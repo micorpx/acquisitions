@@ -46,8 +46,8 @@ ENV NODE_ENV=production
 # Copy package files
 COPY package*.json ./
 
-# Install only production dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install only production dependencies and skip lifecycle scripts (e.g. husky prepare)
+RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
 # Copy source code
 COPY src ./src

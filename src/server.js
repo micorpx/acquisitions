@@ -3,17 +3,13 @@ import logger from './config/logger.js';
 
 const PORT = process.env.PORT || 3000;
 
-let server;
-
-const gracefulShutdown = async (signal) => {
+const gracefulShutdown = async signal => {
   logger.info(`${signal} received. Starting graceful shutdown...`);
 
   // Stop accepting new connections
-  if (server) {
-    server.close(() => {
-      logger.info('HTTP server closed');
-    });
-  }
+  server.close(() => {
+    logger.info('HTTP server closed');
+  });
 
   // Close database connection after a timeout
   setTimeout(async () => {
@@ -33,11 +29,16 @@ const gracefulShutdown = async (signal) => {
 };
 
 // Handle shutdown signals
+const server = app.listen(PORT, () => {
+  logger.info(`Listening on port http://localhost:${PORT}`);
+});
+
+// Handle shutdown signals
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // Handle uncaught exceptions
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', error => {
   logger.error('Uncaught Exception:', error);
   gracefulShutdown('uncaughtException');
 });
@@ -45,10 +46,6 @@ process.on('uncaughtException', (error) => {
 process.on('unhandledRejection', (reason, promise) => {
   logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
   gracefulShutdown('unhandledRejection');
-});
-
-server = app.listen(PORT, () => {
-  logger.info(`Listening on port http://localhost:${PORT}`);
 });
 
 export default server;
