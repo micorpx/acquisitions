@@ -1,10 +1,11 @@
 import logger from '../config/logger.js';
 import jwtPkg from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '15m';
+const isTestEnv = process.env.NODE_ENV === 'test';
+const JWT_SECRET = process.env.JWT_SECRET || (isTestEnv ? 'ci-test-jwt-secret' : undefined);
 
-// Validate JWT_SECRET at load time
+// Validate JWT_SECRET at load time for non-test environments.
 if (!JWT_SECRET) {
   logger.error('JWT_SECRET environment variable is required');
   throw new Error('JWT_SECRET environment variable is required');
